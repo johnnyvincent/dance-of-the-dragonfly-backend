@@ -4,7 +4,7 @@ const express = require('express')
 const passport = require('passport')
 
 // pull in Mongoose model for examples
-const Example = require('../models/example')
+const Slogan = require('../models/slogan')
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -29,8 +29,8 @@ const router = express.Router()
 
 // INDEX
 // GET /examples
-router.get('/examples', requireToken, (req, res, next) => {
-  Example.find()
+router.get('/slogans', requireToken, (req, res, next) => {
+  Slogan.find()
     // respond with status 200 and JSON of the examples
     .then(examples => res.status(200).json({ examples: examples }))
     // if an error occurs, pass it to the handler
@@ -39,26 +39,26 @@ router.get('/examples', requireToken, (req, res, next) => {
 
 // SHOW
 // GET /examples/5a7db6c74d55bc51bdf39793
-router.get('/examples/:id', requireToken, (req, res, next) => {
+router.get('/slogans/:id', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Example.findById(req.params.id)
+  Slogan.findById(req.params.id)
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "example" JSON
-    .then(example => res.status(200).json({ example: example }))
+    .then(slogan => res.status(200).json({ slogan: slogan }))
     // if an error occurs, pass it to the handler
     .catch(next)
 })
 
 // CREATE
 // POST /examples
-router.post('/examples', requireToken, (req, res, next) => {
+router.post('/slogans', requireToken, (req, res, next) => {
   // set owner of new example to be current user
-  req.body.example.owner = req.user.id
+  req.body.slogan.owner = req.user.id
 
-  Example.create(req.body.example)
+  Slogan.create(req.body.slogan)
     // respond to succesful `create` with status 201 and JSON of new "example"
-    .then(example => {
-      res.status(201).json({ example })
+    .then(slogan => {
+      res.status(201).json({ slogan })
     })
     // if an error occurs, pass it off to our error handler
     // the error handler needs the error message and the `res` object so that it
@@ -68,17 +68,17 @@ router.post('/examples', requireToken, (req, res, next) => {
 
 // UPDATE
 // PATCH /examples/5a7db6c74d55bc51bdf39793
-router.patch('/examples/:id', requireToken, removeBlanks, (req, res, next) => {
+router.patch('/slogans/:id', requireToken, removeBlanks, (req, res, next) => {
   // if the client attempts to change the `owner` property by including a new
   // owner, prevent that by deleting that key/value pair
-  delete req.body.example.owner
+  delete req.body.slogan.owner
 
-  Example.findById(req.params.id)
+  Slogan.findById(req.params.id)
     .then(handle404)
     // ensure the signed in user (req.user.id) is the same as the example's owner (example.owner)
-    .then(example => requireOwnership(req, example))
+    .then(slogan => requireOwnership(req, slogan))
     // updating example object with exampleData
-    .then(example => example.updateOne(req.body.example))
+    .then(slogan => slogan.updateOne(req.body.slogan))
     // if that succeeded, return 204 and no JSON
     .then(() => res.sendStatus(204))
     // if an error occurs, pass it to the handler
@@ -87,13 +87,13 @@ router.patch('/examples/:id', requireToken, removeBlanks, (req, res, next) => {
 
 // DESTROY
 // DELETE /examples/5a7db6c74d55bc51bdf39793
-router.delete('/examples/:id', requireToken, (req, res, next) => {
-  Example.findById(req.params.id)
+router.delete('/slogans/:id', requireToken, (req, res, next) => {
+  Slogan.findById(req.params.id)
     .then(handle404)
-     // ensure the signed in user (req.user.id) is the same as the example's owner (example.owner)
-    .then(example => requireOwnership(req, example))
+    // ensure the signed in user (req.user.id) is the same as the example's owner (example.owner)
+    .then(slogan => requireOwnership(req, slogan))
     // delete example from mongodb
-    .then(example => example.deleteOne())
+    .then(slogan => slogan.deleteOne())
     // send back 204 and no content if the deletion succeeded
     .then(() => res.sendStatus(204))
     // if an error occurs, pass it to the handler

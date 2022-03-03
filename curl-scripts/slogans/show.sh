@@ -1,11 +1,12 @@
-#!/bin/bash
+#!/bin/sh
+# TOKEN= 
 
 API="http://localhost:4741"
-URL_PATH="/examples"
+URL_PATH="/slogans"
 
 curl "${API}${URL_PATH}/${ID}" \
   --include \
-  --request DELETE \
+  --request GET \
   --header "Authorization: Bearer ${TOKEN}"
 
 echo
