@@ -39,13 +39,14 @@ router.get('/scores', requireToken, (req, res, next) => {
 
 // SHOW
 // GET /examples/5a7db6c74d55bc51bdf39793
-router.get('/scores/:id', requireToken, (req, res, next) => {
+// Index one user's posts
+router.get('/scores/owner', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
-  Score.findById(req.params.id)
-    .then(handle404)
-    // if `findById` is successful, respond with 200 and "example" JSON
-    .then(score => res.status(200).json({ score: score }))
-    // if an error occurs, pass it to the handler
+  Score.find({ owner: req.user._id })
+    .then(scores => {
+      return scores.map(score => score.toObject())
+    })
+    .then(scores => res.status(200).json({ scores: scores }))
     .catch(next)
 })
 

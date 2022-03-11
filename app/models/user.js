@@ -11,11 +11,11 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   // add a relationship where each user has many Slogans
-  slogans: [
+  scores: [
     {
       type: mongoose.Schema.Types.ObjectId,
       // use Slogan model when populating these references
-      ref: 'Slogan'
+      ref: 'Score'
     }
   ],
   token: String

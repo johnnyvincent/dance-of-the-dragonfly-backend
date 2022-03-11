@@ -139,4 +139,13 @@ router.delete('/sign-out', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+router.get('/users', (req, res, next) => {
+  User.find()
+    // .then(users => res.json({ users: users }))
+    // short hand since the key and value are both users
+    .then(users => res.json({ users }))
+    // error middleware
+    .catch(next)
+})
+
 module.exports = router
